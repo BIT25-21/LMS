@@ -58,11 +58,47 @@ function updateDashboard() {
         const end = new Date(r.endDate);
         return today >= start && today <= end;
     }).length;
-    
+
+    const allTasks = getTasks();
+    const taskPending = allTasks.filter(t => !t.status || t.status === 'pending').length;
+    const taskInProgress = allTasks.filter(t => t.status === 'in-progress').length;
+    const taskCompleted = allTasks.filter(t => t.status === 'finished').length;
+
+    const currentNames = [...new Set(leaveRequests
+        .filter(r => r.status === 'approved')
+        .filter(r => {
+            const start = new Date(r.startDate);
+            const end = new Date(r.endDate);
+            return today >= start && today <= end;
+        })
+        .map(r => `${r.employeeName} (${r.startDate} → ${r.endDate})`))];
+
+    const recentLeaves = leaveRequests
+        .filter(r => r.status === 'approved')
+        .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+        .slice(0, 5);
+
     document.getElementById('total-employees').textContent = totalEmployees;
     document.getElementById('on-leave').textContent = onLeaveToday;
     document.getElementById('pending-requests').textContent = pendingRequests;
     document.getElementById('approved-leaves').textContent = approvedLeaves;
+    document.getElementById('total-task-count').textContent = allTasks.length;
+    document.getElementById('task-pending-count').textContent = taskPending;
+    document.getElementById('task-inprogress-count').textContent = taskInProgress;
+    document.getElementById('task-completed-count').textContent = taskCompleted;
+
+    const onLeaveList = document.getElementById('on-leave-list');
+    const recentLeaveList = document.getElementById('recent-leave-list');
+    if (onLeaveList) {
+        onLeaveList.innerHTML = currentNames.length > 0
+            ? currentNames.map(name => `<li>${escapeHtml(name)}</li>`).join('')
+            : '<li class="muted">No one is on leave today.</li>';
+    }
+    if (recentLeaveList) {
+        recentLeaveList.innerHTML = recentLeaves.length > 0
+            ? recentLeaves.map(req => `<li><strong>${escapeHtml(req.employeeName)}</strong> — ${req.startDate} to ${req.endDate} <span class="muted">(${escapeHtml(req.leaveType)})</span></li>`).join('')
+            : '<li class="muted">No recent approved leaves yet.</li>';
+    }
 }
 
 // ===== EMPLOYEE MANAGEMENT =====
@@ -682,18 +718,20 @@ function loadNav() {
 function getStaticNav() {
     return `
     <nav>
+        <div class="nav-brand">
+            <img src="logo.jpeg" alt="Tsol Hub logo" />
+            <div>
+                <strong>TsolHub International</strong>
+                <span>Leave & Task Management</span>
+            </div>
+        </div>
         <div class="nav-items">
-            <a class="nav-link" href="dashboard.html"><span class="nav-icon">
-            ${getSvgIcon('dashboard')}
-            </span>Dashboard<span class="nav-badge" data-for="dashboard">
-            </span></a>
-            
-            <a class="nav-link" href="employee.html"><span class="nav-icon">
-            ${getSvgIcon('users')}</span>Employee Management<span class="nav-badge" data-for="employees"></span></a>
-            <a class="nav-link" href="application.html"><span class="nav-icon">${getSvgIcon('apply')}</span>Leave Application<span class="nav-badge" data-for="application"></span></a>
-            <a class="nav-link" href="approval.html"><span class="nav-icon">${getSvgIcon('approval')}</span>Leave Approval<span class="nav-badge" data-for="approval"></span></a>
-            <a class="nav-link" href="schedule.html"><span class="nav-icon">${getSvgIcon('calendar')}</span>Leave Schedule<span class="nav-badge" data-for="schedule"></span></a>
-            <a class="nav-link" href="tasks.html"><span class="nav-icon">${getSvgIcon('tasks')}</span>Tasks<span class="nav-badge" data-for="tasks"></span></a>
+            <a class="nav-link" href="dashboard.html"><span class="nav-icon">${getSvgIcon('dashboard')}</span><span class="nav-label">Dashboard</span><span class="nav-badge" data-for="dashboard"></span></a>
+            <a class="nav-link" href="employee.html"><span class="nav-icon">${getSvgIcon('users')}</span><span class="nav-label">Employee Management</span><span class="nav-badge" data-for="employees"></span></a>
+            <a class="nav-link" href="application.html"><span class="nav-icon">${getSvgIcon('apply')}</span><span class="nav-label">Leave Application</span><span class="nav-badge" data-for="application"></span></a>
+            <a class="nav-link" href="approval.html"><span class="nav-icon">${getSvgIcon('approval')}</span><span class="nav-label">Leave Approval</span><span class="nav-badge" data-for="approval"></span></a>
+            <a class="nav-link" href="schedule.html"><span class="nav-icon">${getSvgIcon('calendar')}</span><span class="nav-label">Leave Schedule</span><span class="nav-badge" data-for="schedule"></span></a>
+            <a class="nav-link" href="tasks.html"><span class="nav-icon">${getSvgIcon('tasks')}</span><span class="nav-label">Tasks</span><span class="nav-badge" data-for="tasks"></span></a>
         </div>
         <div id="nav-profile"></div>
     </nav>`;

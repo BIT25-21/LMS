@@ -12,22 +12,61 @@
 
     <div class="container">
         <h2>Dashboard</h2>
+        <p class="section-description">Quick view of active employees, leave activity, and task load.</p>
         <div class="dashboard">
-            <div class="card">
-                <h3>Total Employees</h3>
-                <p id="total-employees">0</p>
+            <div class="card metric-card metric-employees">
+                <div class="metric-label">Total Employees</div>
+                <div class="metric-value" id="total-employees">0</div>
             </div>
-            <div class="card">
-                <h3>On Leave Today</h3>
-                <p id="on-leave">0</p>
+            <div class="card metric-card metric-leave">
+                <div class="metric-label">On Leave Today</div>
+                <div class="metric-value" id="on-leave">0</div>
             </div>
-            <div class="card">
-                <h3>Pending Requests</h3>
-                <p id="pending-requests">0</p>
+            <div class="card metric-card metric-requests">
+                <div class="metric-label">Pending Requests</div>
+                <div class="metric-value" id="pending-requests">0</div>
             </div>
-            <div class="card">
-                <h3>Approved Leaves</h3>
-                <p id="approved-leaves">0</p>
+            <div class="card metric-card metric-tasks">
+                <div class="metric-label">Total Tasks</div>
+                <div class="metric-value" id="total-task-count">0</div>
+            </div>
+        </div>
+        <div class="dashboard-panel-grid">
+            <div class="card panel-card">
+                <div class="panel-header">
+                    <h3>Task Summary</h3>
+                    <p class="muted">Status distribution across open assignments</p>
+                </div>
+                <div class="task-status-grid">
+                    <div class="status-block status-pending">
+                        <span>Pending</span>
+                        <strong id="task-pending-count">0</strong>
+                    </div>
+                    <div class="status-block status-inprogress">
+                        <span>In Progress</span>
+                        <strong id="task-inprogress-count">0</strong>
+                    </div>
+                    <div class="status-block status-finished">
+                        <span>Completed</span>
+                        <strong id="task-completed-count">0</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="card panel-card">
+                <div class="panel-header">
+                    <h3>Leave Activity</h3>
+                    <p class="muted">Current and recent approved leave details</p>
+                </div>
+                <div class="leave-summary">
+                    <div>
+                        <h4>On Leave Now</h4>
+                        <ul id="on-leave-list" class="dashboard-list"></ul>
+                    </div>
+                    <div>
+                        <h4>Recent Leave Takers</h4>
+                        <ul id="recent-leave-list" class="dashboard-list"></ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
