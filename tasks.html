@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tasks - Leave Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <div id="app-nav"></div>
+
+    <div class="container">
+        <h2>Task Assignment</h2>
+
+        <div style="margin-bottom:20px; padding:16px; background: rgba(245,246,255,0.9); border-radius:12px;">
+            <h3>Assign / Add Task</h3>
+            <form id="add-task-form" onsubmit="(function(e){ e.preventDefault(); const emp = document.getElementById('task-emp').value; const title = document.getElementById('task-title').value; const desc = document.getElementById('task-desc').value; const due = document.getElementById('task-due').value; const status = document.getElementById('task-status').value; if(!emp||!title){ alert('Select employee and title'); return; } addTaskForEmployee(emp,title,desc,due,status); e.target.reset(); }) (event)">
+                <label for="task-emp">Employee</label>
+                <select id="task-emp" required>
+                    <option value="">Select employee</option>
+                </select>
+                <label for="task-title">Title</label>
+                <input type="text" id="task-title" required>
+                <label for="task-desc">Description</label>
+                <textarea id="task-desc"></textarea>
+                <label for="task-due">Due date</label>
+                <input type="date" id="task-due">
+                <label for="task-status">Initial status</label>
+                <select id="task-status">
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="finished">Finished</option>
+                </select>
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <div style="margin-bottom:20px; display:flex; gap:12px; align-items:center;">
+            <div>
+                <label for="timeline-filter-emp">Filter by employee</label>
+                <select id="timeline-filter-emp" onchange="(function(e){ setTaskFilterEmployee(e.target.value); })(event)">
+                    <option value="">All employees</option>
+                </select>
+            </div>
+            <div>
+                <label for="timeline-sort">Sort by due date</label>
+                <select id="timeline-sort" onchange="(function(e){ setTaskSortMode(e.target.value); })(event)">
+                    <option value="due-asc">Due date ↑</option>
+                    <option value="due-desc">Due date ↓</option>
+                    <option value="created-desc">Newest</option>
+                </select>
+            </div>
+            <div style="margin-left:auto">
+                <button onclick="refreshTaskTimeline()">Refresh Timeline</button>
+            </div>
+        </div>
+
+        <div id="task-edit" style="display:none; margin-bottom:16px; padding:12px; background:rgba(255,255,255,0.95); border-radius:8px;">
+            <h3>Edit Task</h3>
+            <input type="hidden" id="edit-task-id">
+            <label for="edit-task-title">Title</label>
+            <input type="text" id="edit-task-title">
+            <label for="edit-task-desc">Description</label>
+            <textarea id="edit-task-desc"></textarea>
+            <label for="edit-task-due">Due date</label>
+            <input type="date" id="edit-task-due">
+            <label for="edit-task-status">Status</label>
+            <select id="edit-task-status">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="finished">Finished</option>
+            </select>
+            <div style="margin-top:8px">
+                <button onclick="saveEditedTask()">Save</button>
+                <button onclick="cancelEditTask()">Cancel</button>
+            </div>
+        </div>
+
+        <h3>All Tasks</h3>
+        <div id="tasks-table"></div>
+
+        <h3>Task Timeline</h3>
+        <div id="tasks-timeline">
+            <div id="timeline-pending"></div>
+            <div id="timeline-in-progress"></div>
+            <div id="timeline-delayed"></div>
+            <div id="timeline-finished"></div>
+        </div>
+    </div>
+</body>
+</html>

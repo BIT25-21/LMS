@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body class="login-page">
+
+    <div class="container">
+        <div class="login-grid">
+            <div class="login-card">
+                <div class="login-brand">
+                    <h1>Leaveable</h1>
+                    <p class="muted">Simple leave management for small teams</p>
+                </div>
+
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <label for="login-username">Email</label>
+                    <input id="login-username" type="email" placeholder="you@company.com" required>
+
+                    <label for="login-password">Password</label>
+                    <input id="login-password" type="password" placeholder="Enter a password" required>
+
+                    <button type="submit">Login</button>
+                    <div style="text-align: center; margin-top:12px;">
+                        <small class="muted">Tip: any credentials will work for this demo</small>
+                    </div>
+                </form>
+            </div>
+
+            <aside class="welcome-panel">
+                <h2>Welcome to Leave Management System</h2>
+            
+                    <ul>
+                        <li>Real-time dashboard with live statistics</li>
+                        <li>Employee management (add, delete)</li>
+                        <li>Leave request submission with validation</li>
+                        <li>Approval workflow for managers</li>
+                        <li>Automatic leave balance tracking</li>
+                        <li>Leave schedule visualization</li>
+                        <li>Real-time notifications</li>
+                    </ul>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+</body>
+</html>
