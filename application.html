@@ -5,13 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Leave Management System</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+   
+
+
+ <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Supabase initialization -->
+    <script>
+        /******************************************************
+         * SUPABASE CLIENT INITIALIZATION
+         ******************************************************/
+        const sb = supabase.createClient(
+            "https://dccbsfoshbyhvmmcuasz.supabase.co",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo"
+        );
+
+        // expose globally for employee.js
+        window.sb = sb;
+
+        console.log("✅ Supabase initialized for Employee module");
+    </script>
+
+    <!-- Employee module -->
+    <script src="js/application.js" defer></script>
+
+    <!-- Logout -->
+    <script src="js/auth.js" defer></script>
+
+
+
+
+
+
+
+
+
+
+
+
 </head>
 <body>
-    <div id="app-nav"></div>
+       <aside class="side-nav" id="sideNav">
+        <div class="brand">TSHOLHUB</div>
+        <nav>
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="application.html" class="nav-item active">Apply Leave</a>
+            <a href="approval.html" class="nav-item">Approvals</a>
+            <a href="employee.html" class="nav-item">Employees</a>
+            <a href="schedule.html" class="nav-item">Schedule</a>
+            <a href="tasks.html" class="nav-item">Tasks</a>
 
-    <div class="container">
-        <h2>Leave Application</h2>
+            <button onclick="logout()" class="nav-item logout-btn">
+    Logout
+</button>
+        </nav>
+        <button id="navToggle" class="nav-toggle">☰</button>
+    </aside>
+
+    <main class="container">
+        <header class="page-header">
+            <h2>Leave Application</h2>
+        </header>
         <form id="leave-request-form" onsubmit="submitLeave(event)">
             <label for="leave-emp">Employee</label>
             <select id="leave-emp" required>
@@ -33,6 +88,6 @@
             <textarea id="leave-reason" required></textarea>
             <button type="submit">Submit Leave Request</button>
         </form>
-    </div>
+    </main>
 </body>
 </html>

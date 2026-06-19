@@ -1,76 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Management System</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Dashboard | Leaveable</title>
+
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css">
+
+
+<!-- 1. Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- 2. Initialize Supabase FIRST -->
+<script>
+/******************************************************
+ * SUPABASE INITIALIZATION (GLOBAL CLIENT)
+ ******************************************************/
+const sb = supabase.createClient(
+  "https://dccbsfoshbyhvmmcuasz.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo"
+);
+
+// expose globally
+window.sb = sb;
+
+console.log("Supabase initialized");
+</script>
+
+
+<!-- Dashboard JS -->
+<script src="js/dashboard.js" defer></script>
+
+ <!-- Logout -->
+    <script src="js/auth.js" defer></script>
+
+
 </head>
+
 <body>
-       <div id="app-nav"></div>
 
-    <div class="container">
-        <h2>Dashboard</h2>
-        <p class="section-description">Quick view of active employees, leave activity, and task load.</p>
-        <div class="dashboard">
-            <div class="card metric-card metric-employees">
-                <div class="metric-label">Total Employees</div>
-                <div class="metric-value" id="total-employees">0</div>
-            </div>
-            <div class="card metric-card metric-leave">
-                <div class="metric-label">On Leave Today</div>
-                <div class="metric-value" id="on-leave">0</div>
-            </div>
-            <div class="card metric-card metric-requests">
-                <div class="metric-label">Pending Requests</div>
-                <div class="metric-value" id="pending-requests">0</div>
-            </div>
-            <div class="card metric-card metric-tasks">
-                <div class="metric-label">Total Tasks</div>
-                <div class="metric-value" id="total-task-count">0</div>
-            </div>
-        </div>
-        <div class="dashboard-panel-grid">
-            <div class="card panel-card">
-                <div class="panel-header">
-                    <h3>Task Summary</h3>
-                    <p class="muted">Status distribution across open assignments</p>
-                </div>
-                <div class="task-status-grid">
-                    <div class="status-block status-pending">
-                        <span>Pending</span>
-                        <strong id="task-pending-count">0</strong>
-                    </div>
-                    <div class="status-block status-inprogress">
-                        <span>In Progress</span>
-                        <strong id="task-inprogress-count">0</strong>
-                    </div>
-                    <div class="status-block status-finished">
-                        <span>Completed</span>
-                        <strong id="task-completed-count">0</strong>
-                    </div>
-                </div>
-            </div>
-            <div class="card panel-card">
-                <div class="panel-header">
-                    <h3>Leave Activity</h3>
-                    <p class="muted">Current and recent approved leave details</p>
-                </div>
-                <div class="leave-summary">
-                    <div>
-                        <h4>On Leave Now</h4>
-                        <ul id="on-leave-list" class="dashboard-list"></ul>
-                    </div>
-                    <div>
-                        <h4>Recent Leave Takers</h4>
-                        <ul id="recent-leave-list" class="dashboard-list"></ul>
-                    </div>
-                </div>
-            </div>
-        </div>
+<aside class="side-nav">
+    <div class="brand">Leaveable</div>
+
+       <aside class="side-nav" id="sideNav">
+        <div class="brand">TSHOLHUB</div>
+        <nav>
+            <a href="dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="application.html" class="nav-item">Apply Leave</a>
+            <a href="approval.html" class="nav-item">Approvals</a>
+            <a href="employee.html" class="nav-item">Employees</a>
+            <a href="schedule.html" class="nav-item ">Schedule</a>
+            <a href="tasks.html" class="nav-item">Tasks</a>
+            <button onclick="logout()" class="nav-item logout-btn">
+    Logout
+</button>
+
+        </nav>
+        <button id="navToggle" class="nav-toggle">☰</button>
+    </aside>
+
+
+    <button id="navToggle" class="nav-toggle">☰</button>
+</aside>
+
+<main class="container">
+
+    <div class="page-header">
+        <h2>Dashboard Overview</h2>
+        <p class="section-description">Real-time system analytics and workforce insights</p>
     </div>
+
+    <!-- METRICS -->
+    <section class="metrics-grid">
+
+        <div class="metric-card blue">
+            <h3>Total Employees</h3>
+            <p id="total-employees">0</p>
+        </div>
+
+        <div class="metric-card orange">
+            <h3>On Leave Today</h3>
+            <p id="on-leave">0</p>
+        </div>
+
+        <div class="metric-card yellow">
+            <h3>Pending Requests</h3>
+            <p id="pending-requests">0</p>
+        </div>
+
+        <div class="metric-card green">
+            <h3>Total Tasks</h3>
+            <p id="total-tasks">0</p>
+        </div>
+
+    </section>
+
+
+    <!-- LISTS -->
+    <section class="lists-grid">
+
+        <div class="list-card">
+            <h3>Currently On Leave</h3>
+            <ul id="on-leave-list"></ul>
+        </div>
+
+        <div class="list-card">
+            <h3>Recent Leave Activity</h3>
+            <ul id="recent-leave-list"></ul>
+        </div>
+
+    </section>
+
+</main>
+
 </body>
-
-
 </html>

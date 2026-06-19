@@ -6,15 +6,47 @@
     <title>Leave Management System</title>
  
  <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+   
+ <!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const sb = supabase.createClient(
+    "https://dccbsfoshbyhvmmcuasz.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo"
+);
+
+window.sb = sb;
+console.log("Supabase initialized");
+</script>
+
+<script src="js/schedule.js" defer></script>
+
+ <!-- Logout -->
+    <script src="js/auth.js" defer></script>
+
 </head>
 <body>
-    <div id="app-nav"></div>
+    <aside class="side-nav" id="sideNav">
+        <div class="brand">TSHOLHUB</div>
+        <nav>
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="application.html" class="nav-item">Apply Leave</a>
+            <a href="approval.html" class="nav-item">Approvals</a>
+            <a href="employee.html" class="nav-item">Employees</a>
+            <a href="schedule.html" class="nav-item active">Schedule</a>
+            <a href="tasks.html" class="nav-item">Tasks</a>
+            <button onclick="logout()" class="nav-item logout-btn">
+    Logout
+</button>
+        </nav>
+        <button id="navToggle" class="nav-toggle">☰</button>
+    </aside>
 
-    <div class="container">
+    <main class="container">
         <h2>Leave Schedule</h2>
         <h3>Current Leave Calendar</h3>
         <div id="leave-schedule"></div>
-    </div>
+    </main>
 </body>
 </html>

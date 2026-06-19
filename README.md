@@ -7,6 +7,27 @@ A comprehensive web-based leave management application built with HTML, CSS, and
 ### 1. **Dashboard**
 - Real-time statistics display
 - Total employees count
+
+Server-side admin endpoint (create users)
+----------------------------------------
+If you want to create auth users without switching the browser session, run the small admin service included at `server/create_user.js`.
+
+Setup
+
+1. Copy `server/.env.example` to `server/.env` and fill `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, and `ADMIN_API_KEY`.
+2. From the `server` folder run:
+
+```bash
+npm install
+npm start
+```
+
+3. Call the endpoint with `x-admin-key` header set to your `ADMIN_API_KEY`:
+
+POST http://localhost:8080/admin/create-user
+Body JSON: { "email": "new@company.com", "full_name": "New User" }
+
+The service uses the Supabase service_role key to create the user and triggers a reset-password email so the user can set their own password.
 - Current employees on leave
 - Pending leave requests
 - Approved leaves overview
@@ -285,7 +306,39 @@ This is a frontend-only application. For production use:
 - Implement proper access control
 - Add audit logging
 
+## Supabase Integration
+
+A Supabase schema has been added in `supabase-schema.sql` for:
+- `profiles` to store employee/user data and link to `auth.users`
+- `roles` and `user_roles` for app-level RBAC
+- `leave_types` to define leave categories
+- `leave_requests` for pending/approved/rejected leave workflows
+- `tasks` to support leave blocking and task visibility
+- `leave_schedule` and `current_leave_schedule` views for approved leave calendar data
+
+Use the Supabase SQL editor or CLI to run `supabase-schema.sql` and seed the initial role/leave-type data.
+
 ## Author Notes
+
+## Supabase Quickstart
+
+1. Create a Supabase project and run `supabase-schema.sql` in the SQL editor.
+2. In your app, configure the public anon credentials for development by adding this near the top of `index.html` (only for local/dev testing):
+
+```html
+<script>
+  window.SUPABASE_CONFIG = {
+    url: 'https://your-project.supabase.co',
+    anonKey: 'your-public-anon-key'
+  };
+</script>
+```
+
+3. Reload the app; the frontend will use Supabase for data when configured and fall back to `localStorage` otherwise.
+
+4. To fully enable user-based behavior, create `profiles` rows that reference `auth.users` ids and assign `user_roles`.
+
+Security note: Never ship anon keys in production clients without proper RLS policies. Use environment server-side when possible.
 
 This leave management system demonstrates:
 - Object-oriented JavaScript design
