@@ -1,14 +1,16 @@
+
+
 /******************************************************
- * SUPABASE GLOBAL INIT (NO TIMING ISSUES)
+ * SUPABASE CONFIGURATION
  ******************************************************/
 
-const supabaseUrl = "https://dccbsfoshbyhvmmcuasz.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo";
+const SUPABASE_URL = "https://dccbsfoshbyhvmmcuasz.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo";
 
-if (!window.supabase || !window.supabase.createClient) {
-    console.error("❌ Supabase SDK not loaded");
-}
+// Create client
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-window.sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+// expose globally
+window.sb = sb;
 
-console.log("✅ Supabase ready immediately");
+console.log("Supabase client initialized");

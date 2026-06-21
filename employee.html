@@ -4,58 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Employee Management</title>
+    <title>Page Title</title>
 
-    <!-- Main stylesheet -->
+    <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 
-    <!-- Supabase SDK -->
+    <!-- 1. Supabase SDK (ONLY ONCE) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Supabase initialization -->
-    <script>
-        /******************************************************
-         * SUPABASE CLIENT INITIALIZATION
-         ******************************************************/
-        const sb = supabase.createClient(
-            "https://dccbsfoshbyhvmmcuasz.supabase.co",
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjY2JzZm9zaGJ5aHZtbWN1YXN6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMDM2NzAsImV4cCI6MjA5NjY3OTY3MH0.ZCqh6stpOrkHD7rWtU_97gow5NpnZxUsxKGQFDLXFmo"
-        );
+    <!-- 2. Global Supabase client -->
+    <script src="js/config.js"></script>
 
-        // expose globally for employee.js
-        window.sb = sb;
+    <!-- 3. Page logic -->
+     
+    <script src="js/employee.js" defer>
 
-        console.log("✅ Supabase initialized for Employee module");
+          console.log("EMPLOYEE PAGE LOADED");
+console.trace("Load trace");
     </script>
+    
 
-    <!-- Employee module -->
-    <script src="js/employee.js" defer></script>
-
- <!-- Logout -->
+    <!-- 4. Optional auth (logout, session checks) -->
+    
+  
     <script src="js/auth.js" defer></script>
 
 </head>
 
 <body>
 
-    <!-- ==================================================
-         SIDE NAVIGATION
-    ================================================== -->
-      <aside class="side-nav" id="sideNav">
-        <div class="brand">TSHOLHUB</div>
+    <!-- SIDE NAV -->
+    <aside class="side-nav" id="sideNav">
+        <div class="brand">Leaveable</div>
+
         <nav>
             <a href="dashboard.html" class="nav-item">Dashboard</a>
             <a href="application.html" class="nav-item">Apply Leave</a>
             <a href="approval.html" class="nav-item">Approvals</a>
-            <a href="employee.html" class="nav-item active">Employees</a>
+            <a href="employee.html" class="nav-item active">Employees</a>           
             <a href="schedule.html" class="nav-item">Schedule</a>
-            <a href="tasks.html" class="nav-item">Tasks</a>
-
-            <button onclick="logout()" class="nav-item logout-btn">
-    Logout
-</button>
+            <a href="tasks.html" class="nav-item ">Tasks</a>
+            <button onclick="logout()" class="logout-btn">Logout</button>
         </nav>
-        <button id="navToggle" class="nav-toggle">☰</button>
     </aside>
 
     <!-- ==================================================
@@ -68,54 +58,89 @@
             <h2>Employee Management</h2>
         </header>
 
-        <!-- ==================================================
-             ADD EMPLOYEE FORM
-        ================================================== -->
+        
+        
+
+        <!-- ================================
+     ADD EMPLOYEE FORM (UPDATED)
+================================ -->
+<form id="add-employee-form">
+
+    <h3>Employee Details</h3>
+
+    <label>Full Name</label>
+    <input type="text" id="emp-name" required>
+
+    <label>Email</label>
+    <input type="email" id="emp-email" required>
+
+    <label>Password</label>
+    <input type="password" id="emp-password" required>
+
+    <label>Department</label>
+    <input type="text" id="emp-dept" required>
+
+    <label>Role</label>
+    <select id="emp-role">
+        <option value="employee">Employee</option>
+        <option value="manager">Manager</option>
+        <option value="hr">HR</option>
+        <option value="admin">Admin</option>
+    </select>
+
+    <hr>
+
+    <h3>Leave Entitlements</h3>
+
+    <label>Annual Leave (Days)</label>
+    <input type="number" id="annual-leave" value="21">
+
+    <label>Sick Leave (Days)</label>
+    <input type="number" id="sick-leave" value="14">
+
+    <label>Maternity Leave (Days)</label>
+    <input type="number" id="maternity-leave" value="60">
+
+    <button type="submit">Create Employee</button>
+
+</form>
+
+
         <section class="card">
+    <h3>Reset Employee Password</h3>
 
-            <h3>Add New Employee</h3>
+    <input type="email" id="reset-email" placeholder="Employee email">
+    <input type="password" id="new-password" placeholder="New password">
 
-            <form id="add-employee-form">
+    <button onclick="resetPassword()">Reset Password</button>
+</section>
 
-                <!-- Full name -->
-                <label>Full Name</label>
-                <input type="text" id="emp-name" required>
+  <!-- ==================================================
+     EMPLOYEE TABLE
+================================================== -->
+<section class="card">
 
-                <!-- Email -->
-                <label>Email</label>
-                <input type="email" id="emp-email" required>
+    <h3>Employee List</h3>
 
-                <!-- Department -->
-                <label>Department</label>
-                <input type="text" id="emp-dept" placeholder="e.g IT" required>
+    <!-- Loading state -->
+    <div id="employees-loading" style="display:none;">
+        Loading employees...
+    </div>
 
-                <!-- Role -->
-                <label>Role</label>
-                <select id="emp-role">
-                    <option value="employee">Employee</option>
-                    <option value="manager">Manager</option>
-                    <option value="admin">Admin</option>
-                </select>
+    <!-- Error state -->
+    <div id="employees-error" style="display:none; color:red;"></div>
 
-                <!-- Submit -->
-                <button type="submit">Create Employee</button>
+    <!-- Empty state -->
+    <div id="employees-empty" style="display:none;">
+        No employees found.
+    </div>
 
-            </form>
+    <!-- Table container -->
+    <div id="employees-table">
+        <!-- dynamic content -->
+    </div>
 
-        </section>
-
-        <!-- ==================================================
-             EMPLOYEE TABLE
-        ================================================== -->
-        <section class="card">
-
-            <h3>Employee List</h3>
-
-            <div id="employees-table">
-                <!-- dynamic content -->
-            </div>
-
-        </section>
+</section>
 
     </main>
 

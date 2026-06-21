@@ -43,7 +43,7 @@ async function loadApprovals() {
             .from("leave_requests")
             .select("*")
             .eq("status", "pending")
-            .order("submitted_at", { ascending: false });
+            .order("created_at", { ascending: false });
 
         if (error) {
             console.error("Load error:", error);
@@ -129,8 +129,8 @@ function renderTable(requests, profileMap, typeMap) {
 
     requests.forEach(req => {
 
-        const profile = profileMap[req.requester_profile_id];
-        const type = typeMap[req.leave_type_id];
+        const profile = profileMap?.[req.requester_profile_id] || {};
+        const type = typeMap?.[req.leave_type_id] || {};
 
         html += `
             <tr>

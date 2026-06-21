@@ -1,66 +1,84 @@
 /******************************************************
- * TASKS MODULE 
+ * TASKS MODULE (PRODUCTION READY)
  ******************************************************/
 
-/**
- * INIT
- */
+console.log("Tasks module loaded");
+
+// =====================================================
+// INIT
+// =====================================================
 document.addEventListener("DOMContentLoaded", () => {
+
+    if (!window.sb) {
+        console.error("Supabase not initialized");
+        return;
+    }
+
     loadEmployeesForTasks();
     loadTasks();
 });
 
-/******************************************************
- * LOAD EMPLOYEES
- ******************************************************/
+
+// =====================================================
+// LOAD EMPLOYEES
+// =====================================================
 async function loadEmployeesForTasks() {
 
-    if (!window.sb) return;
+    const select = document.getElementById("task-emp");
+    if (!select) return;
 
     const { data, error } = await window.sb
         .from("profiles")
-        .select("id, full_name");
+        .select("id, full_name, role")
+        .neq("role", "admin")
+        .order("full_name");
 
     if (error) {
-        console.error(error);
+        console.error("Employee load error:", error);
         return;
     }
 
-    const select = document.getElementById("task-emp");
     select.innerHTML = `<option value="">Select employee</option>`;
 
     data.forEach(emp => {
         const opt = document.createElement("option");
         opt.value = emp.id;
-        opt.textContent = emp.full_name;
+        opt.textContent = `${emp.full_name} (${emp.role})`;
         select.appendChild(opt);
     });
 }
 
-/******************************************************
- * ADD TASK
- ******************************************************/
+
+// =====================================================
+// CREATE TASK
+// =====================================================
 async function handleAddTask(event) {
+
     event.preventDefault();
 
-    const emp = document.getElementById("task-emp").value;
-    const title = document.getElementById("task-title").value;
-    const desc = document.getElementById("task-desc").value;
-    const due = document.getElementById("task-due").value;
+    const assignee_profile_id = document.getElementById("task-emp").value;
+    const title = document.getElementById("task-title").value.trim();
+    const description = document.getElementById("task-desc").value.trim();
+    const due_date = document.getElementById("task-due").value;
     const status = document.getElementById("task-status").value;
+
+    if (!assignee_profile_id || !title) {
+        alert("Employee and title are required");
+        return;
+    }
 
     const { error } = await window.sb
         .from("tasks")
         .insert([{
-            assignee_profile_id: emp,
+            assignee_profile_id,
             title,
-            description: desc,
-            due_date: due,
+            description,
+            due_date,
             status
         }]);
 
     if (error) {
-        console.error(error);
+        console.error("Task insert error:", error);
         alert("Failed to create task");
         return;
     }
@@ -69,43 +87,40 @@ async function handleAddTask(event) {
     loadTasks();
 }
 
-/******************************************************
- * LOAD TASKS
- ******************************************************/
+
+// =====================================================
+// LOAD TASKS
+// =====================================================
 async function loadTasks() {
 
     const { data, error } = await window.sb
         .from("tasks")
-        .select("*");
+        .select("*")
+        .order("created_at", { ascending: false });
 
     if (error) {
-        console.error(error);
+        console.error("Load tasks error:", error);
         return;
     }
 
-    // 🔥 STORE GLOBALLY for editing
-    window.currentTasks = data;
-
+    window.currentTasks = data || [];
     renderKanban(data || []);
 }
 
 
-
-
-/******************************************************
- * KANBAN RENDER
- ******************************************************/
+// =====================================================
+// KANBAN RENDER
+// =====================================================
 function renderKanban(tasks) {
 
-    const pending = document.getElementById("col-pending");
-    const progress = document.getElementById("col-in-progress");
-    const finished = document.getElementById("col-finished");
-    const overdue = document.getElementById("col-overdue");
+    const cols = {
+        pending: document.getElementById("col-pending"),
+        "in-progress": document.getElementById("col-in-progress"),
+        finished: document.getElementById("col-finished"),
+        overdue: document.getElementById("col-overdue")
+    };
 
-    pending.innerHTML = "";
-    progress.innerHTML = "";
-    finished.innerHTML = "";
-    overdue.innerHTML = "";
+    Object.values(cols).forEach(c => c.innerHTML = "");
 
     const today = new Date();
 
@@ -113,35 +128,30 @@ function renderKanban(tasks) {
 
         const card = document.createElement("div");
         card.className = "task-card";
+
+        const isOverdue =
+            task.due_date && new Date(task.due_date) < today && task.status !== "finished";
+
         card.innerHTML = `
-    <strong>${task.title}</strong>
-    <p>${task.description || ""}</p>
-    <small>${task.due_date || "No due date"}</small>
-
-    <div style="margin-top:8px;">
-        <button onclick="openEditTask(event, '${task.id}')">
-            Edit
-        </button>
-    </div>
-`;
-
-        
-        
+            <strong>${task.title}</strong>
+            <p>${task.description || ""}</p>
+            <small>${task.due_date || "No due date"}</small>
+            ${isOverdue ? "<p style='color:red;'>Overdue</p>" : ""}
+        `;
 
         card.onclick = () => cycleStatus(task);
 
-        const due = task.due_date ? new Date(task.due_date) : null;
-
-        if (task.status === "pending") pending.appendChild(card);
-        else if (task.status === "in-progress") progress.appendChild(card);
-        else if (task.status === "finished") finished.appendChild(card);
-        else if (due && due < today) overdue.appendChild(card);
+        if (isOverdue) cols.overdue.appendChild(card);
+        else if (task.status === "pending") cols.pending.appendChild(card);
+        else if (task.status === "in-progress") cols["in-progress"].appendChild(card);
+        else if (task.status === "finished") cols.finished.appendChild(card);
     });
 }
 
-/******************************************************
- * STATUS CHANGE
- ******************************************************/
+
+// =====================================================
+// STATUS CYCLE
+// =====================================================
 async function cycleStatus(task) {
 
     let newStatus = "pending";
@@ -162,12 +172,13 @@ async function cycleStatus(task) {
     loadTasks();
 }
 
-/******************************************************
- * OPEN EDIT PANEL
- ******************************************************/
+
+// =====================================================
+// EDIT TASK
+// =====================================================
 function openEditTask(event, taskId) {
 
-    event.stopPropagation(); // prevent status cycling
+    event.stopPropagation();
 
     const task = window.currentTasks.find(t => t.id === taskId);
     if (!task) return;
@@ -181,30 +192,26 @@ function openEditTask(event, taskId) {
     document.getElementById("edit-task-status").value = task.status;
 }
 
-/******************************************************
- * SAVE EDIT
- ******************************************************/
+
+// =====================================================
+// SAVE EDIT
+// =====================================================
 async function saveTaskEdit() {
 
     const id = document.getElementById("edit-task-id").value;
 
-    const title = document.getElementById("edit-task-title").value;
-    const description = document.getElementById("edit-task-desc").value;
-    const due_date = document.getElementById("edit-task-due").value;
-    const status = document.getElementById("edit-task-status").value;
-
     const { error } = await window.sb
         .from("tasks")
         .update({
-            title,
-            description,
-            due_date,
-            status
+            title: document.getElementById("edit-task-title").value,
+            description: document.getElementById("edit-task-desc").value,
+            due_date: document.getElementById("edit-task-due").value,
+            status: document.getElementById("edit-task-status").value
         })
         .eq("id", id);
 
     if (error) {
-        console.error("Update failed:", error);
+        console.error(error);
         alert("Update failed");
         return;
     }
@@ -213,9 +220,10 @@ async function saveTaskEdit() {
     loadTasks();
 }
 
-/******************************************************
- * CANCEL EDIT
- ******************************************************/
+
+// =====================================================
+// CANCEL EDIT
+// =====================================================
 function cancelTaskEdit() {
     document.getElementById("task-edit-panel").style.display = "none";
 }

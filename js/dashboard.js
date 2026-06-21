@@ -173,7 +173,7 @@ async function loadRecentLeaveActivity() {
         const { data: requests, error } = await window.sb
             .from("leave_requests")
             .select("*")
-            .order("submitted_at", { ascending: false })
+            .order("created_at", { ascending: false })
             .limit(10);
 
         if (error) throw error;
