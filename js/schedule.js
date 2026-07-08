@@ -1,82 +1,94 @@
 /******************************************************
- * SCHEDULE MODULE
+ * LEAVE SCHEDULE MODULE
  ******************************************************/
 
 document.addEventListener("DOMContentLoaded", () => {
-    loadLeaveSchedule();
-});
-
-/**
- * Load approved leave schedule (from Supabase VIEW)
- */
-async function loadLeaveSchedule() {
 
     if (!window.sb) {
         console.error("Supabase not initialized");
         return;
     }
 
-    const container = document.getElementById("leave-schedule");
-    if (!container) return;
+    loadLeaveSchedule();
+});
+
+
+/******************************************************
+ * LOAD ALL LEAVE REQUESTS
+ ******************************************************/
+async function loadLeaveSchedule() {
 
     const { data, error } = await window.sb
-        .from("leave_schedule")   // your SQL VIEW
+        .from("leave_requests")
         .select("*")
         .order("start_date", { ascending: true });
 
     if (error) {
-        console.error("Schedule load error:", error);
-        container.innerHTML = `<p style="color:red">${error.message}</p>`;
+        console.error("Error loading schedule:", error);
         return;
     }
 
-    renderSchedule(data || []);
+    categorizeLeaves(data);
 }
 
-/**
- * Render schedule list
- */
-function renderSchedule(items) {
 
-    const container = document.getElementById("leave-schedule");
+/******************************************************
+ * CATEGORIZE LEAVES
+ ******************************************************/
+function categorizeLeaves(leaves) {
+
+    const today = new Date();
+
+    const current = [];
+    const upcoming = [];
+    const ended = [];
+
+    leaves.forEach(leave => {
+
+        const start = new Date(leave.start_date);
+        const end = new Date(leave.end_date);
+
+        // CURRENT (active today)
+        if (start <= today && end >= today) {
+            current.push(leave);
+        }
+
+        // UPCOMING (future)
+        else if (start > today) {
+            upcoming.push(leave);
+        }
+
+        // ENDED (past)
+        else if (end < today) {
+            ended.push(leave);
+        }
+    });
+
+    renderLeaves("current-leave", current, "No active leave today");
+    renderLeaves("upcoming-leave", upcoming, "No upcoming leave");
+    renderLeaves("ended-leave", ended, "No completed leave");
+}
+
+
+/******************************************************
+ * RENDER LIST
+ ******************************************************/
+function renderLeaves(containerId, items, emptyMessage) {
+
+    const container = document.getElementById(containerId);
+
     if (!container) return;
 
     if (!items.length) {
-        container.innerHTML = "<p>No approved leave scheduled.</p>";
+        container.innerHTML = `<p>${emptyMessage}</p>`;
         return;
     }
 
-    let html = `
-        <table border="1" cellpadding="8" width="100%">
-            <thead>
-                <tr>
-                    <th>Employee</th>
-                    <th>Department</th>
-                    <th>Leave Type</th>
-                    <th>Start</th>
-                    <th>End</th>
-                    <th>Days</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    items.forEach(item => {
-        html += `
-            <tr>
-                <td>${item.requester_name}</td>
-                <td>${item.department}</td>
-                <td>${item.leave_type}</td>
-                <td>${item.start_date}</td>
-                <td>${item.end_date}</td>
-                <td>${item.days}</td>
-                <td>${item.status}</td>
-            </tr>
-        `;
-    });
-
-    html += `</tbody></table>`;
-
-    container.innerHTML = html;
+    container.innerHTML = items.map(leave => `
+        <div class="schedule-item">
+            <strong>${leave.employee_name || "Employee"}</strong><br>
+            <small>${leave.start_date} → ${leave.end_date}</small><br>
+            <span>Status: ${leave.status}</span>
+        </div>
+    `).join("");
 }

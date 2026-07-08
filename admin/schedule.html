@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles.css">
+
+    <!-- 1. Supabase SDK (ONLY ONCE) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- 2. Global Supabase client -->
+    <script src="../js/config.js"></script>
+
+    <!-- 3. Page logic -->
+    <script src="../js/dashboard.js" defer></script>
+
+    <!-- 4. Optional auth (logout, session checks) -->
+    <script src="../js/auth.js" defer></script>
+
+    <script src="../js/schedule.js" defer></script>
+
+</head>
+
+<body>
+
+    <!-- SIDE NAV (if needed) -->
+    <aside class="side-nav" id="sideNav">
+        <div class="brand">Leaveable</div>
+
+        <nav>
+             <a href="dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="application.html" class="nav-item">Apply Leave</a>
+            <a href="approval.html" class="nav-item">Approvals</a>
+            <a href="employee.html" class="nav-item">Employees</a>
+            <a href="schedule.html" class="nav-item">Schedule</a>
+            <a href="tasks.html" class="nav-item ">Tasks</a>
+     
+
+          <button id="logoutBtn" class="logout-btn">Logout</button>
+        </nav>
+    </aside>
+
+    <main class="container">
+
+    <div class="page-header">
+        <h2>Leave Schedule</h2>
+        <p class="section-description">Track employee leave status in real time</p>
+    </div>
+
+    <!-- GRID LAYOUT -->
+    <section class="schedule-grid">
+
+        <!-- CURRENT LEAVE -->
+        <div class="schedule-card">
+            <h3>🟢 Current Leave</h3>
+            <div id="current-leave" class="schedule-list"></div>
+        </div>
+
+        <!-- IN PROGRESS -->
+        <div class="schedule-card">
+            <h3>🟡 Upcoming / In Progress</h3>
+            <div id="upcoming-leave" class="schedule-list"></div>
+        </div>
+
+        <!-- ENDED -->
+        <div class="schedule-card">
+            <h3>🔴 Completed Leave</h3>
+            <div id="ended-leave" class="schedule-list"></div>
+        </div>
+
+    </section>
+
+</main>
+
+
+
+
+</body>
+</html>

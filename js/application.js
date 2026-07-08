@@ -9,14 +9,24 @@ console.log("Leave module loaded");
 // =====================================================
 document.addEventListener("DOMContentLoaded", async () => {
 
-    if (!window.sb) return;
+    console.log("Application module loaded");
 
-    await loadEmployeesDropdown();
-    await loadLeaveTypes();
+    if (!window.sb) {
+        console.error("Supabase not initialized");
+        return;
+    }
 
-    document
-        .getElementById("leave-request-form")
-        .addEventListener("submit", submitLeave);
+    try {
+        await loadEmployeesDropdown();
+        await loadLeaveTypes();
+
+        document
+            .getElementById("leave-request-form")
+            ?.addEventListener("submit", submitLeave);
+
+    } catch (err) {
+        console.error("Init error:", err);
+    }
 });
 
 

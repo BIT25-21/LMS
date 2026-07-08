@@ -126,7 +126,10 @@ async function loadCurrentLeaveList() {
             .lte("start_date", today)
             .gte("end_date", today);
 
-        if (error) throw error;
+        if (error) {
+    console.error("Supabase error:", error);
+    return;
+}
 
         list.innerHTML = "";
 
@@ -173,10 +176,14 @@ async function loadRecentLeaveActivity() {
         const { data: requests, error } = await window.sb
             .from("leave_requests")
             .select("*")
-            .order("created_at", { ascending: false })
-            .limit(10);
+            .order("created_at", { ascending: false }) //for dashboard, we want the most recent activity first
+            .limit(10); 
 
-        if (error) throw error;
+        if (error) {
+    console.error("Supabase error:", error);
+    return;
+    
+}
 
         list.innerHTML = "";
 
@@ -221,7 +228,7 @@ async function loadTaskChart() {
         .select("status");
 
     if (error) {
-        console.error(error);
+        console.error("Supabase error:", error);
         return;
     }
 

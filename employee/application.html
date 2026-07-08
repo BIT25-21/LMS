@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Leave Application</title>
+
+    <!-- ================================
+        STYLES
+    ================================= -->
+    <link rel="stylesheet" href="/styles.css">
+
+    <!-- ================================
+        SUPABASE SDK (ONLY ONCE)
+    ================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- ================================
+        GLOBAL SUPABASE CLIENT
+    ================================= -->
+    <script src="../js/config.js" defer></script>
+
+    <!-- ================================
+        AUTH MODULE (SESSION + LOGOUT)
+    ================================= -->
+    <script src="../js/auth.js" defer></script>
+
+    <!-- ================================
+        APPLICATION LOGIC (FIXED)
+    ================================= -->
+    <script src="../js/application.js" defer></script>
+
+</head>
+
+<body>
+
+    <!-- ================================
+        SIDE NAVIGATION
+    ================================= -->
+    <aside class="side-nav" id="sideNav">
+        <div class="brand">Leaveable</div>
+
+        <nav>
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="application.html" class="nav-item active">Apply Leave</a>
+            <a href="employee.html" class="nav-item">Employees</a>
+            <a href="schedule.html" class="nav-item">Schedule</a>
+            <a href="tasks.html" class="nav-item">Tasks</a>
+
+            <button id="logoutBtn" class="logout-btn">Logout</button>
+        </nav>
+    </aside>
+
+    <!-- ================================
+        MAIN CONTENT
+    ================================= -->
+    <main class="container">
+
+        <header class="page-header">
+            <h2>Leave Application</h2>
+        </header>
+
+        <!-- ================================
+            LEAVE APPLICATION FORM
+        ================================= -->
+        <form id="leave-request-form">
+
+            <label for="leave-emp">Employee</label>
+            <select id="leave-emp" required>
+                <option value="">Loading employees...</option>
+            </select>
+
+            <label for="leave-type">Leave Type</label>
+            <select id="leave-type" required>
+                <option value="">Loading leave types...</option>
+            </select>
+
+            <label for="start-date">Start Date</label>
+            <input type="date" id="start-date" required>
+
+            <label for="end-date">End Date</label>
+            <input type="date" id="end-date" required>
+
+            <label for="leave-reason">Reason</label>
+            <textarea id="leave-reason" required></textarea>
+
+            <button type="submit">Submit Leave Request</button>
+
+        </form>
+
+    </main>
+
+</body>
+
+</html>

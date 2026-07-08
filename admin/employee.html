@@ -1,50 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Page Title</title>
+    <title>Dashboard</title>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="/styles.css">
 
     <!-- 1. Supabase SDK (ONLY ONCE) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <!-- 2. Global Supabase client -->
-    <script src="js/config.js"></script>
+    <script src="../js/config.js"></script>
 
     <!-- 3. Page logic -->
-     
-    <script src="js/employee.js" defer>
-
-          console.log("EMPLOYEE PAGE LOADED");
-console.trace("Load trace");
-    </script>
-    
+    <script src="../js/employee.js" defer></script>
 
     <!-- 4. Optional auth (logout, session checks) -->
-    
-  
-    <script src="js/auth.js" defer></script>
+    <script src="../js/auth.js" defer></script>
 
 </head>
 
 <body>
 
-    <!-- SIDE NAV -->
+    <!-- SIDE NAV (if needed) -->
     <aside class="side-nav" id="sideNav">
         <div class="brand">Leaveable</div>
 
         <nav>
-            <a href="dashboard.html" class="nav-item">Dashboard</a>
+             <a href="dashboard.html" class="nav-item active">Dashboard</a>
             <a href="application.html" class="nav-item">Apply Leave</a>
             <a href="approval.html" class="nav-item">Approvals</a>
-            <a href="employee.html" class="nav-item active">Employees</a>           
+            <a href="employee.html" class="nav-item">Employees</a>
             <a href="schedule.html" class="nav-item">Schedule</a>
             <a href="tasks.html" class="nav-item ">Tasks</a>
-            <button onclick="logout()" class="logout-btn">Logout</button>
+     
+
+          <button id="logoutBtn" class="logout-btn">Logout</button>
         </nav>
     </aside>
 
@@ -105,15 +100,17 @@ console.trace("Load trace");
 
 </form>
 
-
-        <section class="card">
+<section class="card">
     <h3>Reset Employee Password</h3>
 
-    <input type="email" id="reset-email" placeholder="Employee email">
-    <input type="password" id="new-password" placeholder="New password">
+    <input type="email" id="reset-email" placeholder="Employee email" required>
+    <input type="password" id="new-password" placeholder="New password" required>
 
-    <button onclick="resetPassword()">Reset Password</button>
+    <button id="reset-password-btn" type="button">
+        Reset Password
+    </button>
 </section>
+
 
   <!-- ==================================================
      EMPLOYEE TABLE

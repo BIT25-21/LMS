@@ -1,13 +1,15 @@
 /******************************************************
- * TASKS MODULE (PRODUCTION READY)
+ * TASKS MODULE (FIXED + SCHEMA MATCHED)
  ******************************************************/
 
 console.log("Tasks module loaded");
 
+initTasks();
+
 // =====================================================
 // INIT
 // =====================================================
-document.addEventListener("DOMContentLoaded", () => {
+function initTasks() {
 
     if (!window.sb) {
         console.error("Supabase not initialized");
@@ -16,7 +18,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadEmployeesForTasks();
     loadTasks();
-});
+
+    const form = document.getElementById("add-task-form");
+    if (form) {
+        form.addEventListener("submit", handleAddTask);
+    }
+}
 
 
 // =====================================================
@@ -40,7 +47,7 @@ async function loadEmployeesForTasks() {
 
     select.innerHTML = `<option value="">Select employee</option>`;
 
-    data.forEach(emp => {
+    (data || []).forEach(emp => {
         const opt = document.createElement("option");
         opt.value = emp.id;
         opt.textContent = `${emp.full_name} (${emp.role})`;
@@ -74,17 +81,17 @@ async function handleAddTask(event) {
             title,
             description,
             due_date,
-            status
+            status: status === "finished" ? "done" : status
         }]);
 
     if (error) {
         console.error("Task insert error:", error);
-        alert("Failed to create task");
+        alert(error.message);
         return;
     }
 
     event.target.reset();
-    loadTasks();
+    await loadTasks();
 }
 
 
@@ -115,10 +122,15 @@ function renderKanban(tasks) {
 
     const cols = {
         pending: document.getElementById("col-pending"),
-        "in-progress": document.getElementById("col-in-progress"),
-        finished: document.getElementById("col-finished"),
+        in_progress: document.getElementById("col-in-progress"),
+        done: document.getElementById("col-finished"),
         overdue: document.getElementById("col-overdue")
     };
+
+    if (!cols.pending || !cols.in_progress || !cols.done || !cols.overdue) {
+        console.error("Missing kanban columns");
+        return;
+    }
 
     Object.values(cols).forEach(c => c.innerHTML = "");
 
@@ -130,7 +142,9 @@ function renderKanban(tasks) {
         card.className = "task-card";
 
         const isOverdue =
-            task.due_date && new Date(task.due_date) < today && task.status !== "finished";
+            task.due_date &&
+            new Date(task.due_date) < today &&
+            task.status !== "done";
 
         card.innerHTML = `
             <strong>${task.title}</strong>
@@ -143,8 +157,8 @@ function renderKanban(tasks) {
 
         if (isOverdue) cols.overdue.appendChild(card);
         else if (task.status === "pending") cols.pending.appendChild(card);
-        else if (task.status === "in-progress") cols["in-progress"].appendChild(card);
-        else if (task.status === "finished") cols.finished.appendChild(card);
+        else if (task.status === "in_progress") cols.in_progress.appendChild(card);
+        else if (task.status === "done") cols.done.appendChild(card);
     });
 }
 
@@ -156,8 +170,8 @@ async function cycleStatus(task) {
 
     let newStatus = "pending";
 
-    if (task.status === "pending") newStatus = "in-progress";
-    else if (task.status === "in-progress") newStatus = "finished";
+    if (task.status === "pending") newStatus = "in_progress";
+    else if (task.status === "in_progress") newStatus = "done";
 
     const { error } = await window.sb
         .from("tasks")
@@ -169,7 +183,7 @@ async function cycleStatus(task) {
         return;
     }
 
-    loadTasks();
+    await loadTasks();
 }
 
 
@@ -212,12 +226,12 @@ async function saveTaskEdit() {
 
     if (error) {
         console.error(error);
-        alert("Update failed");
+        alert(error.message);
         return;
     }
 
     cancelTaskEdit();
-    loadTasks();
+    await loadTasks();
 }
 
 

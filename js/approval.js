@@ -1,21 +1,13 @@
 /******************************************************
- * LEAVE APPROVAL MODULE (STABLE VERSION)
- * ----------------------------------------------------
- * FIXES:
- * - Supabase relationship errors (PGRST200)
- * - Broken joins on leave_requests
- * - Safe manual joins
+ * LEAVE APPROVAL MODULE (PRODUCTION CLEAN VERSION)
  ******************************************************/
 
-/**
- * INIT
- ******************************************************/
 document.addEventListener("DOMContentLoaded", async () => {
 
     const sb = window.sb;
 
     if (!sb) {
-        console.error("❌ Supabase not initialized");
+        console.error("Supabase not initialized");
         return;
     }
 
@@ -23,89 +15,65 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-/**
- * LOAD APPROVAL DATA
+/******************************************************
+ * LOAD APPROVALS
  ******************************************************/
 async function loadApprovals() {
 
     const sb = window.sb;
-
     const container = document.getElementById("approval-table");
 
     if (!container) return;
 
+    container.innerHTML = "<p>Loading approvals...</p>";
+
     try {
 
-        /**************************************************
-         * STEP 1: FETCH LEAVE REQUESTS (NO JOINS)
-         **************************************************/
+        // 1. Get pending requests
         const { data: requests, error } = await sb
             .from("leave_requests")
             .select("*")
             .eq("status", "pending")
             .order("created_at", { ascending: false });
 
-        if (error) {
-            console.error("Load error:", error);
-            container.innerHTML = `<p style="color:red;">${error.message}</p>`;
-            return;
-        }
+        if (error) throw error;
 
         if (!requests || requests.length === 0) {
             container.innerHTML = "<p>No pending requests</p>";
             return;
         }
 
-
-        /**************************************************
-         * STEP 2: COLLECT IDS
-         **************************************************/
+        // 2. Extract IDs
         const profileIds = [...new Set(requests.map(r => r.requester_profile_id))];
         const typeIds = [...new Set(requests.map(r => r.leave_type_id))];
 
-
-        /**************************************************
-         * STEP 3: FETCH PROFILES
-         **************************************************/
+        // 3. Fetch profiles
         const { data: profiles } = await sb
             .from("profiles")
             .select("id, full_name, department")
             .in("id", profileIds);
 
-
-        /**************************************************
-         * STEP 4: FETCH LEAVE TYPES
-         **************************************************/
-        const { data: leaveTypes } = await sb
+        // 4. Fetch leave types
+        const { data: types } = await sb
             .from("leave_types")
             .select("id, name")
             .in("id", typeIds);
 
+        // 5. Build maps
+        const profileMap = Object.fromEntries((profiles || []).map(p => [p.id, p]));
+        const typeMap = Object.fromEntries((types || []).map(t => [t.id, t]));
 
-        /**************************************************
-         * STEP 5: MAP DATA
-         **************************************************/
-        const profileMap = Object.fromEntries(
-            (profiles || []).map(p => [p.id, p])
-        );
-
-        const typeMap = Object.fromEntries(
-            (leaveTypes || []).map(t => [t.id, t])
-        );
-
-
-        /**************************************************
-         * STEP 6: RENDER TABLE
-         **************************************************/
+        // 6. Render
         renderTable(requests, profileMap, typeMap);
 
     } catch (err) {
-        console.error("Approval module error:", err);
+        console.error(err);
+        container.innerHTML = `<p style="color:red;">${err.message}</p>`;
     }
 }
 
 
-/**
+/******************************************************
  * RENDER TABLE
  ******************************************************/
 function renderTable(requests, profileMap, typeMap) {
@@ -129,37 +97,36 @@ function renderTable(requests, profileMap, typeMap) {
 
     requests.forEach(req => {
 
-        const profile = profileMap?.[req.requester_profile_id] || {};
-        const type = typeMap?.[req.leave_type_id] || {};
+        const profile = profileMap[req.requester_profile_id] || {};
+        const type = typeMap[req.leave_type_id] || {};
 
         html += `
-            <tr>
-                <td>${profile?.full_name || "Unknown"}</td>
-                <td>${profile?.department || "-"}</td>
-                <td>${type?.name || "-"}</td>
+            <tr id="row-${req.id}">
+                <td>${profile.full_name || "Unknown"}</td>
+                <td>${profile.department || "-"}</td>
+                <td>${type.name || "-"}</td>
                 <td>${req.start_date} → ${req.end_date}</td>
                 <td>${req.reason || "-"}</td>
                 <td>
-                    <button onclick="approveLeave('${req.id}')">Approve</button>
-                    <button onclick="rejectLeave('${req.id}')">Reject</button>
+                    <button onclick="approveLeave('${req.id}', this)">Approve</button>
+                    <button onclick="rejectLeave('${req.id}', this)">Reject</button>
                 </td>
             </tr>
         `;
     });
 
-    html += `
-            </tbody>
-        </table>
-    `;
+    html += `</tbody></table>`;
 
     container.innerHTML = html;
 }
 
 
-/**
- * APPROVE LEAVE
+/******************************************************
+ * APPROVE
  ******************************************************/
-async function approveLeave(id) {
+async function approveLeave(id, btn) {
+
+    btn.disabled = true;
 
     const sb = window.sb;
 
@@ -173,24 +140,26 @@ async function approveLeave(id) {
 
     if (error) {
         alert("Approval failed: " + error.message);
+        btn.disabled = false;
         return;
     }
 
-    alert("Leave approved ✔");
-    loadApprovals();
+    await loadApprovals();
 }
 
 
-/**
- * REJECT LEAVE
+/******************************************************
+ * REJECT
  ******************************************************/
-async function rejectLeave(id) {
-
-    const sb = window.sb;
+async function rejectLeave(id, btn) {
 
     const reason = prompt("Enter rejection reason:");
 
     if (!reason) return;
+
+    btn.disabled = true;
+
+    const sb = window.sb;
 
     const { error } = await sb
         .from("leave_requests")
@@ -203,9 +172,9 @@ async function rejectLeave(id) {
 
     if (error) {
         alert("Rejection failed: " + error.message);
+        btn.disabled = false;
         return;
     }
 
-    alert("Leave rejected ❌");
-    loadApprovals();
+    await loadApprovals();
 }

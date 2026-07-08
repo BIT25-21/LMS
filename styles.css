@@ -23,7 +23,6 @@
     --shadow: 0 18px 50px rgba(20, 35, 80, 0.12);
 }
 
-
 /* ==================================================
    2. RESET & BASE
 ================================================== */
@@ -54,9 +53,8 @@ body {
 }
 
 /* ==================================================
- 4.  LISTS 
+   4. LISTS (GLOBAL UI)
 ================================================== */
-
 ul {
     list-style: none;
     padding: 0;
@@ -65,31 +63,25 @@ ul {
     gap: 14px;
 }
 
-/* Main list items (used in welcome panel + general UI) */
 ul li {
     background: rgba(255, 255, 255, 0.97);
     border: 1px solid rgba(45, 132, 255, 0.16);
     border-radius: 18px;
     padding: 16px 18px;
-
     color: var(--text);
-
     box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Hover effect (your original “card feel”) */
 ul li:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 24px rgba(45, 132, 255, 0.12);
 }
 
-/* Muted text inside lists */
 ul li .muted {
     color: var(--muted);
     font-size: 0.9rem;
 }
-
 
 /* ==================================================
    5. SIDEBAR NAVIGATION
@@ -138,16 +130,9 @@ ul li .muted {
     transform: translateX(4px);
 }
 
-/* Hamburger button (hidden on desktop) */
-.nav-toggle {
-    display: none;
-}
-
-
 /* ==================================================
-   LOGIN PAGE
+   6. LOGIN PAGE (FIXED - NO OVERLAY ISSUE)
 ================================================== */
-
 .login-page .container {
     margin-left: 0;
     min-height: 100vh;
@@ -157,7 +142,6 @@ ul li .muted {
     padding: 40px;
 }
 
-/* RESTORE 2-COLUMN LAYOUT */
 .login-grid {
     display: grid;
     grid-template-columns: 420px 1fr;
@@ -167,109 +151,33 @@ ul li .muted {
     width: 100%;
 }
 
-/* LOGIN CARD (FIXED) */
 .login-card {
-    background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.98),
-        rgba(245,250,255,0.98)
-    );
-
+    background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,250,255,0.98));
     border: 1px solid rgba(79,109,202,0.12);
     border-radius: 18px;
     padding: 28px;
-
     box-shadow: 0 24px 60px rgba(22,45,103,0.08);
 
     position: relative;
-    overflow: hidden;
+    z-index: 2;
 }
 
-/* soft glow effect */
-.login-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-        circle at top left,
-        rgba(64, 107, 196, 0.08),
-        transparent 60%
-    );
-    pointer-events: none;
-}
-
-/* BRAND */
-.login-brand h1 {
-    margin: 0 0 6px 0;
-    font-size: 1.8rem;
-    color: var(--primary-dark);
-}
-
-.login-brand {
-    margin-bottom: 10px;
-}
+/* ❌ REMOVED OVERLAY COMPLETELY */
 
 /* RIGHT PANEL */
 .welcome-panel {
     background: rgba(255,255,255,0.98);
     border-radius: 18px;
     padding: 26px;
-
     border: 1px solid rgba(79,109,202,0.10);
-    box-shadow: 0 24px 60px rgba(22,45,103,0.06);
 }
-
-.welcome-panel h2 {
-    margin-top: 0;
-    font-size: 1.4rem;
-    color: var(--text);
-}
-
-/* FORM */
-.login-card form {
-    margin-top: 20px;
-    display: grid;
-    gap: 14px;
-}
-
-.login-card form label {
-    font-size: 0.9rem;
-    color: var(--muted);
-}
-
-.login-card input {
-    background: rgba(255,255,255,0.95);
-    border: 1px solid rgba(67,93,173,0.18);
-}
-
-.login-card button {
-    margin-top: 8px;
-    font-weight: 700;
-}
-
-/* MOBILE */
-@media (max-width: 900px) {
-    .login-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .login-page .container {
-        padding: 20px;
-    }
-}
-
-
 
 /* ==================================================
-   6. FORMS
+   7. FORMS (FIXED INPUT INTERACTION)
 ================================================== */
 form {
     display: grid;
     gap: 14px;
-}
-
-label {
-    font-weight: 600;
 }
 
 input,
@@ -280,6 +188,8 @@ textarea {
     border: 1px solid var(--border);
     outline: none;
     transition: 0.2s;
+    position: relative;
+    z-index: 3;
 }
 
 input:focus,
@@ -290,7 +200,7 @@ textarea:focus {
 }
 
 /* ==================================================
-   7. BUTTONS
+   8. BUTTONS
 ================================================== */
 button {
     padding: 12px 16px;
@@ -307,9 +217,9 @@ button:hover {
     transform: translateY(-2px);
 }
 
-
-/* ================= DASHBOARD ONLY ================= */
-
+/* ==================================================
+   9. DASHBOARD METRICS
+================================================== */
 .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -323,43 +233,19 @@ button:hover {
     color: white;
 }
 
-.metric-card h3 {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
 .metric-card p {
     font-size: 2.2rem;
     font-weight: 800;
-    margin: 8px 0 0;
 }
 
-/* Colors */
 .metric-card.blue { background: linear-gradient(135deg,#4f7cff,#2d5bb0); }
 .metric-card.orange { background: linear-gradient(135deg,#ff9a6c,#ff6b6b); }
 .metric-card.yellow { background: linear-gradient(135deg,#ffd86b,#ffb347); }
 .metric-card.green { background: linear-gradient(135deg,#45d49a,#2cb2ff); }
 
-/* Charts */
-.charts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 20px;
-    margin-top: 30px;
-}
-
-.chart-card {
-    background: white;
-    padding: 18px;
-    border-radius: 18px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-}
-
-.chart-card h3 {
-    margin-bottom: 10px;
-}
-
-/* Lists */
+/* ==================================================
+   10. LISTS GRID
+================================================== */
 .lists-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -373,22 +259,8 @@ button:hover {
     border-radius: 18px;
 }
 
-.list-card ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.list-card li {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-
-
-
 /* ==================================================
-   9. TABLES
+   11. TABLES
 ================================================== */
 table {
     width: 100%;
@@ -401,68 +273,31 @@ table {
 
 th, td {
     padding: 14px;
-    text-align: left;
     border-bottom: 1px solid #eee;
 }
 
 th {
     background: #f4f7ff;
-    font-weight: 700;
 }
 
-
-
-
-
-/* ===========================
-   KANBAN BOARD
-=========================== */
-
+/* ==================================================
+   12. KANBAN BOARD
+================================================== */
 .kanban-board {
     display: flex;
     gap: 16px;
-    margin-top: 20px;
     overflow-x: auto;
 }
 
 .kanban-column {
-    flex: 1;
     min-width: 220px;
     background: #f4f6ff;
-    border-radius: 12px;
     padding: 12px;
+    border-radius: 12px;
 }
-
-.kanban-column h4 {
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.kanban-list {
-    min-height: 200px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-/* Task cards */
-.task-card {
-    background: white;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    cursor: grab;
-}
-
-.task-card:active {
-    cursor: grabbing;
-}
-
-
-
 
 /* ==================================================
-   10. MODAL
+   13. MODAL
 ================================================== */
 .modal-backdrop {
     position: fixed;
@@ -477,70 +312,67 @@ th {
     display: flex;
 }
 
-.modal {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    width: 350px;
-}
-
 /* ==================================================
-   11. NOTIFICATIONS
+   14. NOTIFICATIONS
 ================================================== */
-.notification {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 16px;
-    border-radius: 10px;
-    color: white;
-}
-
 .notification-success { background: var(--success); }
 .notification-error { background: var(--danger); }
 
 /* ==================================================
-   12. RESPONSIVE DESIGN
+   15. SCHEDULE PAGE
 ================================================== */
-@media (max-width: 900px) {
-
-    .side-nav {
-        transform: translateX(-100%);
-        transition: 0.3s ease;
-    }
-
-    .side-nav.open {
-        transform: translateX(0);
-    }
-
-    .nav-toggle {
-        display: block;
-        position: fixed;
-        top: 15px;
-        left: 15px;
-        z-index: 2000;
-    }
-
-    .container {
-        margin-left: 0;
-        padding: 20px;
-    }
-
-    .login-grid {
-        grid-template-columns: 1fr;
-    }
+.schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
 }
 
+.schedule-card {
+    background: white;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+.schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.schedule-item {
+    padding: 12px;
+    border-radius: 10px;
+    background: #f7f9ff;
+    border-left: 4px solid var(--primary);
+}
+
+.schedule-item.current { border-left-color: var(--success); }
+.schedule-item.in-progress { border-left-color: var(--warning); }
+.schedule-item.ended { border-left-color: var(--danger); opacity: 0.85; }
+
+/* ==================================================
+   16. RESPONSIVE
+================================================== */
+@media (max-width: 900px) {
+    .side-nav { transform: translateX(-100%); }
+    .container { margin-left: 0; padding: 20px; }
+    .login-grid { grid-template-columns: 1fr; }
+    .schedule-grid { grid-template-columns: 1fr; }
+}
+
+/* ==================================================
+   17. LOGOUT BUTTON
+================================================== */
 .logout-btn {
     margin-top: 20px;
     background: #f81a1d;
     color: white;
-    border: none;
     width: 100%;
     text-align: left;
     padding: 12px;
     border-radius: 6px;
-    cursor: pointer;
 }
 
 .logout-btn:hover {

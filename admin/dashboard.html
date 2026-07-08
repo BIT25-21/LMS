@@ -1,66 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dashboard | Leaveable</title>
+    <title>Dashboard</title>
 
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="styles.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles.css">
 
-
-<!-- Supabase -->
+    <!-- 1. Supabase SDK (ONLY ONCE) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/config.js"></script>
 
+    <!-- 2. Global Supabase client -->
+    <script src="../js/config.js"></script>
 
-<!-- 2. Initialize Supabase FIRST -->
-<script>
+    <!-- 3. Page logic -->
+    <script src="../js/dashboard.js" defer></script>
 
-
-
-// expose globally
-window.sb = sb;
-
-console.log("Supabase initialized");
-</script>
-
-
-<!-- Dashboard JS -->
-<script src="js/dashboard.js" defer></script>
-
- <!-- Logout -->
-    <script src="js/dashboard.js" defer></script>
-
+    <!-- 4. Optional auth (logout, session checks) -->
+    <script src="../js/auth.js" defer></script>
 
 </head>
 
 <body>
 
-<aside class="side-nav">
-    <div class="brand">Leaveable</div>
+    <!-- SIDE NAV (if needed) -->
+    <aside class="side-nav" id="sideNav">
+        <div class="brand">Leaveable</div>
 
-       <aside class="side-nav" id="sideNav">
-        <div class="brand">TSHOLHUB</div>
         <nav>
-            <a href="dashboard.html" class="nav-item active">Dashboard</a>
+             <a href="dashboard.html" class="nav-item active">Dashboard</a>
             <a href="application.html" class="nav-item">Apply Leave</a>
             <a href="approval.html" class="nav-item">Approvals</a>
             <a href="employee.html" class="nav-item">Employees</a>
-            <a href="schedule.html" class="nav-item ">Schedule</a>
-            <a href="tasks.html" class="nav-item">Tasks</a>
-            <button onclick="logout()" class="nav-item logout-btn">
-    Logout
-</button>
+            <a href="schedule.html" class="nav-item">Schedule</a>
+            <a href="tasks.html" class="nav-item ">Tasks</a>
+     
 
+          <button id="logoutBtn" class="logout-btn">Logout</button>
         </nav>
-        <button id="navToggle" class="nav-toggle">☰</button>
     </aside>
-
-
-    <button id="navToggle" class="nav-toggle">☰</button>
-</aside>
 
 <main class="container">
 
