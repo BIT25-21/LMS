@@ -22,10 +22,22 @@
     ================================= -->
     <script src="../js/config.js" defer></script>
 
+    <!-- Shared helpers (escaping, working-day maths) -->
+    <script src="../js/utils.js" defer></script>
+
+    <!-- Leave rules engine (balance, overlap, holidays) -->
+    <script src="../js/leave-rules.js" defer></script>
+
+    <!-- Role guard (RBAC) - must run before page logic -->
+    <script src="../js/guard.js" defer></script>
+
     <!-- ================================
         AUTH MODULE (SESSION + LOGOUT)
     ================================= -->
     <script src="../js/auth.js" defer></script>
+
+    <!-- Notifications (bell, realtime, approve/reject modal) -->
+    <script src="../js/notifications.js" defer></script>
 
     <!-- ================================
         APPLICATION LOGIC (FIXED)

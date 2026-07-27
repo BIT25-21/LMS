@@ -16,11 +16,23 @@
     <!-- 2. Global Supabase client -->
     <script src="../js/config.js"></script>
 
+    <!-- Shared helpers (escaping, working-day maths) -->
+    <script src="../js/utils.js" defer></script>
+
+    <!-- Leave rules engine (balance, overlap, holidays) -->
+    <script src="../js/leave-rules.js" defer></script>
+
+    <!-- Role guard (RBAC) - must run before page logic -->
+    <script src="../js/guard.js" defer></script>
+
     <!-- 3. Page logic -->
     <script src="../js/dashboard.js" defer></script>
 
     <!-- 4. Optional auth (logout, session checks) -->
     <script src="../js/auth.js" defer></script>
+
+    <!-- Notifications (bell, realtime, approve/reject modal) -->
+    <script src="../js/notifications.js" defer></script>
 
 </head>
 
@@ -78,6 +90,11 @@
 
     <!-- LISTS -->
     <section class="lists-grid">
+
+        <div class="list-card">
+            <h3>My Leave Balance</h3>
+            <ul id="my-balances"></ul>
+        </div>
 
         <div class="list-card">
             <h3>Currently On Leave</h3>

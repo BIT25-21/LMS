@@ -16,11 +16,23 @@
     <!-- 2. Global Supabase client -->
     <script src="../js/config.js"></script>
 
+    <!-- Shared helpers (escaping, working-day maths) -->
+    <script src="../js/utils.js" defer></script>
+
+    <!-- Leave rules engine (balance, overlap, holidays) -->
+    <script src="../js/leave-rules.js" defer></script>
+
+    <!-- Role guard (RBAC) - must run before page logic -->
+    <script src="../js/guard.js" defer></script>
+
     <!-- 3. Page logic -->
     <script src="../js/employee.js" defer></script>
 
     <!-- 4. Optional auth (logout, session checks) -->
     <script src="../js/auth.js" defer></script>
+
+    <!-- Notifications (bell, realtime, approve/reject modal) -->
+    <script src="../js/notifications.js" defer></script>
 
 </head>
 
@@ -58,7 +70,7 @@
         <!-- ================================
      ADD EMPLOYEE FORM (UPDATED)
 ================================ -->
-<form id="add-employee-form">
+<form id="add-employee-form" data-role="admin,hr">
 
     <h3>Employee Details</h3>
 
@@ -81,25 +93,21 @@
         <option value="hr">HR</option>
         <option value="admin">Admin</option>
     </select>
-
     <hr>
 
-    <h3>Leave Entitlements</h3>
+    <p class="form-hint">
+        Leave entitlements come from the <strong>Leave Types</strong> table
+        (Annual 30, Sick 14, Maternity 90, Paternity 14, Study 10 days per year).
+        Balance is calculated as entitlement minus approved leave, so it can
+        never drift out of step with the request history.
+    </p>
 
-    <label>Annual Leave (Days)</label>
-    <input type="number" id="annual-leave" value="21">
-
-    <label>Sick Leave (Days)</label>
-    <input type="number" id="sick-leave" value="14">
-
-    <label>Maternity Leave (Days)</label>
-    <input type="number" id="maternity-leave" value="60">
 
     <button type="submit">Create Employee</button>
 
 </form>
 
-<section class="card">
+<section class="card" data-role="admin,hr">
     <h3>Reset Employee Password</h3>
 
     <input type="email" id="reset-email" placeholder="Employee email" required>

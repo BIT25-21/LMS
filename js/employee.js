@@ -35,14 +35,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function checkSession() {
 
     try {
-        const { data: { user } } = await window.sb.auth.getUser();
+        // Employees sign in through the profiles fallback and have no
+        // Supabase Auth session, so ask the guard (which understands
+        // both login paths) rather than sb.auth.getUser() directly.
+        const user = await window.Guard.currentUser();
 
         if (!user) {
             redirectToLogin();
             return false;
         }
 
-        console.log("Session OK:", user.email);
+        console.log("Session OK:", user.email, `(${user.role})`);
         return true;
 
     } catch (err) {
@@ -57,7 +60,7 @@ async function checkSession() {
    3. REDIRECT
 ==================================================== */
 function redirectToLogin() {
-    window.location.href = "login.html";
+    window.location.href = "/index.html";
 }
 
 
@@ -119,10 +122,10 @@ function renderEmployees(employees) {
     employees.forEach(emp => {
         html += `
             <tr>
-                <td>${emp.full_name || ""}</td>
-                <td>${emp.email || ""}</td>
-                <td>${emp.department || ""}</td>
-                <td>${emp.role || ""}</td>
+                <td>${escapeHtml(emp.full_name)}</td>
+                <td>${escapeHtml(emp.email)}</td>
+                <td>${escapeHtml(emp.department)}</td>
+                <td>${escapeHtml(emp.role)}</td>
                 <td>${emp.is_active ? "Active" : "Inactive"}</td>
             </tr>
         `;
@@ -153,11 +156,16 @@ async function addEmployee(event) {
     }
 
     try {
-        const { data: { user } } = await window.sb.auth.getUser();
+        const user = await window.Guard.currentUser();
 
         if (!user) {
             alert("Session expired");
             redirectToLogin();
+            return;
+        }
+
+        if (!window.Guard.isApprover(user)) {
+            alert("You do not have permission to create employees.");
             return;
         }
 

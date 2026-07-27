@@ -378,3 +378,446 @@ th {
 .logout-btn:hover {
     background: #d9363e;
 }
+
+/* ==================================================
+   18. NOTIFICATION BELL + PANEL
+================================================== */
+.notif-wrap {
+    position: relative;
+    margin-bottom: 18px;
+}
+
+.notif-bell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    width: 100%;
+    padding: 12px 14px;
+
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.notif-bell:hover {
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.notif-badge {
+    margin-left: auto;
+    min-width: 22px;
+    padding: 2px 7px;
+
+    background: var(--danger);
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+
+    animation: notif-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes notif-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.14); }
+}
+
+.notif-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    width: 330px;
+    max-height: 420px;
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+
+    z-index: 1200;
+}
+
+/* the class sets display:flex, which would otherwise beat [hidden] */
+.notif-panel[hidden] { display: none; }
+
+.notif-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.notif-panel-head button {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.notif-list {
+    overflow-y: auto;
+}
+
+.notif-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+
+    width: 100%;
+    padding: 14px 16px;
+
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--border);
+
+    /* global `button { color: white }` would make these invisible */
+    color: var(--text);
+    font-family: inherit;
+    font-weight: 400;
+    text-align: left;
+    cursor: pointer;
+}
+
+.notif-item:hover,
+.notif-panel-head button:hover,
+.notif-bell:hover { transform: none; }
+
+.notif-item:hover { background: #f5f8ff; }
+.notif-item.unread { background: #eef4ff; }
+
+.notif-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.notif-item-body strong {
+    font-size: 0.88rem;
+    color: var(--text);
+}
+
+.notif-item-body span {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.35;
+}
+
+.notif-item-body em {
+    font-size: 0.72rem;
+    color: var(--muted);
+    font-style: normal;
+}
+
+.notif-dot {
+    width: 9px;
+    height: 9px;
+    margin-top: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--primary);
+}
+
+.notif-dot.notif-leave_requested { background: var(--warning); }
+.notif-dot.notif-leave_approved  { background: var(--success); }
+.notif-dot.notif-leave_rejected  { background: var(--danger); }
+
+.notif-empty,
+.notif-hint {
+    padding: 22px 16px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+/* ==================================================
+   19. NOTIFICATION DETAIL MODAL
+================================================== */
+.notif-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+
+    background: rgba(15, 26, 51, 0.45);
+}
+
+.notif-modal[hidden] { display: none; }
+
+.notif-modal-card {
+    width: 100%;
+    max-width: 460px;
+    max-height: 85vh;
+    overflow-y: auto;
+
+    padding: 22px 24px;
+    background: var(--surface);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+}
+
+.notif-modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.notif-modal-head button {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.notif-detail {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 10px 14px;
+    font-size: 0.88rem;
+}
+
+.notif-detail dt {
+    color: var(--muted);
+    font-weight: 500;
+}
+
+.notif-detail dd { font-weight: 600; }
+
+.notif-status {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.notif-status-pending  { background: #fff2d9; color: #a86a00; }
+.notif-status-approved { background: #dbf8ee; color: #12855f; }
+.notif-status-rejected { background: #ffe3e6; color: #b32334; }
+
+.notif-reason-label {
+    display: block;
+    margin: 20px 0 6px;
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+#notif-reason {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit;
+}
+
+.notif-modal-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.notif-modal-actions button {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+
+    color: #fff;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.notif-modal-actions button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.btn-approve { background: var(--success); }
+.btn-reject  { background: var(--danger); }
+
+/* ==================================================
+   20. TOASTS
+================================================== */
+.notif-toasts {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    z-index: 3000;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    max-width: 340px;
+}
+
+.notif-toast {
+    padding: 14px 18px;
+    border-radius: 12px;
+
+    background: #1a2a5a;
+    color: #fff;
+    font-size: 0.86rem;
+    line-height: 1.4;
+    box-shadow: var(--shadow);
+
+    animation: notif-slide-in 0.28s ease;
+}
+
+.notif-toast.out {
+    opacity: 0;
+    transform: translateX(20px);
+    transition: 0.3s ease;
+}
+
+.notif-toast-success { background: var(--success); }
+.notif-toast-error   { background: var(--danger); }
+.notif-toast-info    { background: var(--primary); }
+
+@keyframes notif-slide-in {
+    from { opacity: 0; transform: translateX(24px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@media (max-width: 900px) {
+    .notif-panel { width: 280px; }
+    .notif-toasts { left: 16px; right: 16px; max-width: none; }
+}
+
+/* ==================================================
+   21. LEAVE BALANCE BARS
+================================================== */
+.balance-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 14px 16px;
+    margin-bottom: 10px;
+
+    background: #f7f9ff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+
+.balance-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.9rem;
+}
+
+.balance-head strong { color: var(--primary); }
+
+.balance-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: #dde6fb;
+    overflow: hidden;
+}
+
+.balance-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    transition: width 0.4s ease;
+}
+
+.balance-row small {
+    font-size: 0.75rem;
+    color: var(--muted);
+}
+
+.balance-short {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.muted-cell {
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-style: normal;
+}
+
+/* ==================================================
+   22. LEAVE APPLICATION PREVIEW
+================================================== */
+.leave-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
+    margin: 18px 0;
+    padding: 14px 16px;
+
+    border-radius: 12px;
+    border-left: 4px solid var(--primary);
+    background: #f2f6ff;
+
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.leave-preview[hidden] { display: none; }
+
+.leave-preview strong { font-size: 0.92rem; }
+
+.leave-preview span { color: var(--muted); }
+
+.leave-preview-ok {
+    border-left-color: var(--success);
+    background: #eefaf5;
+}
+
+.leave-preview-ok strong { color: #12855f; }
+
+.leave-preview-error {
+    border-left-color: var(--danger);
+    background: #fff1f2;
+}
+
+.leave-preview-error strong { color: #b32334; }
+
+.form-hint {
+    display: block;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+select:disabled {
+    background: #f2f4f9;
+    color: var(--text);
+    opacity: 1;
+    cursor: not-allowed;
+}

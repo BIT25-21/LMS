@@ -33,9 +33,65 @@ async function loadDashboard() {
     }
 
     await loadStats();
+    await loadMyBalances();
     await loadCurrentLeaveList();
     await loadRecentLeaveActivity();
 
+}
+
+
+/******************************************************
+ * MY LEAVE BALANCES
+ * ----------------------------------------------------
+ * Balance is derived from leave_types.default_days minus
+ * approved usage this year — see js/leave-rules.js.
+ ******************************************************/
+async function loadMyBalances() {
+
+    const list = document.getElementById("my-balances");
+    if (!list) return;
+
+    list.innerHTML = "<li>Loading...</li>";
+
+    try {
+        const me = await window.Guard.currentUser();
+
+        if (!me) {
+            list.innerHTML = "<li>Not signed in</li>";
+            return;
+        }
+
+        const balances = await window.LeaveRules.allBalances(me.id);
+
+        if (!balances.length) {
+            list.innerHTML = "<li>No leave types configured</li>";
+            return;
+        }
+
+        list.innerHTML = balances.map(b => {
+
+            const pct = b.entitled
+                ? Math.round((b.used / b.entitled) * 100)
+                : 0;
+
+            return `
+                <li class="balance-row">
+                    <div class="balance-head">
+                        <span>${escapeHtml(b.type)}</span>
+                        <strong>${b.remaining} / ${b.entitled} days</strong>
+                    </div>
+                    <div class="balance-bar">
+                        <div class="balance-bar-fill" style="width:${Math.min(pct, 100)}%"></div>
+                    </div>
+                    <small>${b.used} day(s) used</small>
+                </li>
+            `;
+        }).join("");
+
+    } catch (err) {
+        console.error("Balance load error:", err);
+        list.innerHTML = "<li>Error loading balances</li>";
+    }
 }
 
 /******************************************************

@@ -21,6 +21,7 @@ async function loadLeaveSchedule() {
     const { data, error } = await window.sb
         .from("leave_requests")
         .select("*")
+        .eq("status", "approved")
         .order("start_date", { ascending: true });
 
     if (error) {
@@ -28,7 +29,24 @@ async function loadLeaveSchedule() {
         return;
     }
 
-    categorizeLeaves(data);
+    // leave_requests has no employee_name column — resolve the
+    // names from profiles in one query instead of N.
+    const ids = [...new Set((data || []).map(l => l.requester_profile_id))];
+
+    const { data: profiles } = await window.sb
+        .from("profiles")
+        .select("id, full_name")
+        .in("id", ids.length ? ids : ["00000000-0000-0000-0000-000000000000"]);
+
+    const names = Object.fromEntries(
+        (profiles || []).map(p => [p.id, p.full_name])
+    );
+
+    (data || []).forEach(l => {
+        l.employee_name = names[l.requester_profile_id] || "Unknown employee";
+    });
+
+    categorizeLeaves(data || []);
 }
 
 
@@ -86,9 +104,9 @@ function renderLeaves(containerId, items, emptyMessage) {
 
     container.innerHTML = items.map(leave => `
         <div class="schedule-item">
-            <strong>${leave.employee_name || "Employee"}</strong><br>
-            <small>${leave.start_date} → ${leave.end_date}</small><br>
-            <span>Status: ${leave.status}</span>
+            <strong>${escapeHtml(leave.employee_name || "Employee")}</strong><br>
+            <small>${escapeHtml(leave.start_date)} → ${escapeHtml(leave.end_date)}</small><br>
+            <span>${escapeHtml(String(leave.days ?? "?"))} working day(s)</span>
         </div>
     `).join("");
 }

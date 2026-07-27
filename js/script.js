@@ -101,7 +101,7 @@ function renderEmployeeTable(employees) {
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Department</th>
-                <th>Leave Balance</th>
+                <th>Role</th>
                 <th>Status</th>
             </tr>
     `;
@@ -109,10 +109,10 @@ function renderEmployeeTable(employees) {
     employees.forEach(emp => {
         html += `
             <tr>
-                <td>${emp.full_name || ""}</td>
-                <td>${emp.email || ""}</td>
-                <td>${emp.department || ""}</td>
-                <td>${emp.leave_balance || 0}</td>
+                <td>${escapeHtml(emp.full_name)}</td>
+                <td>${escapeHtml(emp.email)}</td>
+                <td>${escapeHtml(emp.department)}</td>
+                <td>${escapeHtml(emp.role)}</td>
                 <td>${emp.is_active ? "Active" : "Inactive"}</td>
             </tr>
         `;

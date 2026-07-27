@@ -80,8 +80,8 @@ async function handleAddTask(event) {
             assignee_profile_id,
             title,
             description,
-            due_date,
-            status: status === "finished" ? "done" : status
+            due_date: due_date || null,
+            status: normalizeStatus(status)
         }]);
 
     if (error) {
@@ -92,6 +92,21 @@ async function handleAddTask(event) {
 
     event.target.reset();
     await loadTasks();
+}
+
+
+// =====================================================
+// STATUS NORMALISER
+// The <select> options use "in-progress"/"finished" but the
+// tasks table stores "in_progress"/"done". Without this the
+// task lands in a status no kanban column matches.
+// =====================================================
+function normalizeStatus(value) {
+
+    if (value === "finished" || value === "done") return "done";
+    if (value === "in-progress" || value === "in_progress") return "in_progress";
+
+    return "pending";
 }
 
 
@@ -147,9 +162,9 @@ function renderKanban(tasks) {
             task.status !== "done";
 
         card.innerHTML = `
-            <strong>${task.title}</strong>
-            <p>${task.description || ""}</p>
-            <small>${task.due_date || "No due date"}</small>
+            <strong>${escapeHtml(task.title)}</strong>
+            <p>${escapeHtml(task.description)}</p>
+            <small>${escapeHtml(task.due_date || "No due date")}</small>
             ${isOverdue ? "<p style='color:red;'>Overdue</p>" : ""}
         `;
 
@@ -219,8 +234,8 @@ async function saveTaskEdit() {
         .update({
             title: document.getElementById("edit-task-title").value,
             description: document.getElementById("edit-task-desc").value,
-            due_date: document.getElementById("edit-task-due").value,
-            status: document.getElementById("edit-task-status").value
+            due_date: document.getElementById("edit-task-due").value || null,
+            status: normalizeStatus(document.getElementById("edit-task-status").value)
         })
         .eq("id", id);
 

@@ -306,6 +306,85 @@ This is a frontend-only application. For production use:
 - Implement proper access control
 - Add audit logging
 
+## Setup — RUN THIS FIRST
+
+Two SQL files, in the Supabase SQL editor (Dashboard → SQL Editor → New query):
+
+| File | Required? | What it adds |
+|---|---|---|
+| `sql/notifications.sql` | **Yes** | the `notifications` table — nothing in the bell works without it |
+| `sql/leave_rules.sql` | Optional | `public_holidays`; without it the engine excludes weekends only |
+
+Then confirm Realtime is on:
+Dashboard → Database → Replication → `supabase_realtime` → tick `notifications`.
+
+## Business rules
+
+All rules live in one place, `js/leave-rules.js`, so the application form,
+the approvals table and the notification modal can never disagree.
+
+**Leave balance is derived, never stored:**
+
+```
+balance = leave_types.default_days
+        - sum(days on that employee's APPROVED requests of that type, this year)
+```
+
+There is no `leave_balance` column to fall out of sync with the request
+history, and no migration needed. Entitlements are edited in `leave_types`.
+
+| Rule | Where enforced |
+|---|---|
+| Weekends and public holidays are not charged | `countWorkingDays()` in `js/utils.js` |
+| Request cannot exceed remaining balance | `LeaveRules.validate()`, re-checked in `Notify.decide()` |
+| No overlapping pending/approved requests | `LeaveRules.overlaps()` |
+| No back-dated leave | `min` on the start-date input |
+| Unfinished tasks block a request | `canApplyLeave()` in `js/application.js` |
+| Employees may only apply for themselves | `js/application.js` (approvers keep the dropdown) |
+| Nobody approves their own leave | `Notify.decide()` |
+| A request is decided only once | `Notify.decide()` + `.eq("status","pending")` on the update |
+
+The balance is re-checked at approval time, not just at submission, because a
+request can sit in the queue while another approval consumes the same days.
+
+## Notifications
+
+How it works:
+
+| Step | What happens |
+|---|---|
+| Employee submits leave | `application.js` inserts the request, then `Notify.leaveRequested()` writes one notification row per admin/HR/manager |
+| Approver is online | Supabase Realtime pushes the row → bell badge increments + toast appears |
+| Approver opens it | Modal shows the full request with inline **Approve / Reject** |
+| Decision saved | `Notify.decide()` updates `leave_requests` **and** notifies the requester |
+| Employee is online | Bell badge + toast, no refresh needed |
+
+A 15-second poll runs alongside Realtime, so the bell still updates if
+Realtime is unavailable.
+
+Files: `js/notifications.js`, `js/guard.js`, `sql/notifications.sql`,
+styles sections 18–20 in `styles.css`.
+
+## Module map
+
+Load order matters — every page pulls these in this sequence:
+
+| Script | Role |
+|---|---|
+| `js/config.js` | creates the global `window.sb` Supabase client |
+| `js/utils.js` | `escapeHtml`, `countWorkingDays` — no dependencies |
+| `js/leave-rules.js` | balance, overlap, holiday and validation logic |
+| `js/guard.js` | resolves the signed-in user, enforces role access |
+| `js/auth.js` | logout |
+| `js/notifications.js` | bell, realtime, approve/reject modal |
+| page module | `dashboard.js`, `application.js`, … |
+
+### Known limitation
+
+`js/guard.js` is a usability guard, not a security boundary — it runs in the
+browser and can be bypassed. Real enforcement belongs in Supabase Row Level
+Security. See "Security Notes" below.
+
 ## Supabase Integration
 
 A Supabase schema has been added in `supabase-schema.sql` for:

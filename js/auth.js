@@ -22,14 +22,18 @@ async function logout() {
     try {
         console.log("Logout triggered");
 
+        // Employees sign in through the profiles fallback, which stores
+        // the session here. Clearing it FIRST means an unreachable
+        // network / failed signOut can never leave them logged in.
+        sessionStorage.removeItem("user");
+
         const { error } = await window.sb.auth.signOut({
             scope: "global"
         });
 
         if (error) {
+            // session is already gone locally — don't strand the user
             console.error("Signout error:", error);
-            alert(error.message);
-            return;
         }
 
         console.log("Logout successful");
